@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Azurite.APIs\Azurite.APIs.csproj" />
+    <ProjectReference Include="..\Azurite.BlazorWasmApp\Azurite.BlazorWasmApp.csproj" />
   </ItemGroup>
 
 </Project>
