@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.BlazorWasmApp", "Az
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.APIs", "Azurite.APIs\Azurite.APIs.csproj", "{569CFBD9-9654-CB6E-1214-A353EBD7ABE4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServiceBus", "ServiceBus", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppServiceBusClient", "ConsoleAppServiceBusClient\ConsoleAppServiceBusClient.csproj", "{8C189B26-C333-4DB0-9494-0DC71F891602}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,9 +31,16 @@ Global
 		{569CFBD9-9654-CB6E-1214-A353EBD7ABE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{569CFBD9-9654-CB6E-1214-A353EBD7ABE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{569CFBD9-9654-CB6E-1214-A353EBD7ABE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C189B26-C333-4DB0-9494-0DC71F891602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C189B26-C333-4DB0-9494-0DC71F891602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C189B26-C333-4DB0-9494-0DC71F891602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C189B26-C333-4DB0-9494-0DC71F891602}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8C189B26-C333-4DB0-9494-0DC71F891602} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0D1756BD-945E-4340-AA40-3C3F5921FE40}

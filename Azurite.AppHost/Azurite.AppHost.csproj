@@ -12,11 +12,13 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
+    <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" Version="9.4.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Azurite.APIs\Azurite.APIs.csproj" />
     <ProjectReference Include="..\Azurite.BlazorWasmApp\Azurite.BlazorWasmApp.csproj" />
+    <ProjectReference Include="..\ConsoleAppServiceBusClient\ConsoleAppServiceBusClient.csproj" />
   </ItemGroup>
 
 </Project>
