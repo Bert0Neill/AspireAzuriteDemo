@@ -8,14 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-//builder.AddAzureServiceBusClient("DemoAzuriteServiceBus");
-// Connection string to your Service Bus emulator or real instance
-string connectionString = builder.Configuration["ServiceBus:ConnectionString"];
-string queueName = builder.Configuration["ServiceBus:QueueName"];
+string connectionString = builder.Configuration["ServiceBus:ConnectionString"]!;
+string queueName = "myqueue";
 
-builder.Services.AddSingleton(new ServiceBusClient(connectionString));
+// Register ServiceBusSender
+builder.Services.AddSingleton(_ => new ServiceBusClient(connectionString));
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<ServiceBusClient>().CreateSender(queueName));
+
 
 var app = builder.Build();
 
