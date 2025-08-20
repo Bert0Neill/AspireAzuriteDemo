@@ -1,0 +1,22 @@
+{
+  "queues": [
+    {
+      "name": "orders",
+      "maxDeliveryCount": 10,
+      "lockDuration": "00:05:00"
+    },
+    {
+      "name": "payments",
+      "maxDeliveryCount": 5
+    }
+  ],
+  "topics": [
+    {
+      "name": "invoices",
+      "subscriptions": [
+        { "name": "processing" },
+        { "name": "archiving" }
+      ]
+    }
+  ]
+}

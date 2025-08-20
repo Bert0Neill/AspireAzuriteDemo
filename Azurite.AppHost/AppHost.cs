@@ -2,12 +2,23 @@ using Aspire.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-// Service Bus Emulator container
-var sbEmu = builder.AddContainer("servicebus-emulator", "mcr.microsoft.com/azure-messaging/service-bus-emulator:latest")
-    .WithEnvironment("ACCEPT_EULA", "Y")
-    .WithEnvironment("MSSQL_SA_PASSWORD", "YourStrong!Pass123")
-    .WithEndpoint(name: "sb", targetPort: 5672, isProxied: false) // AMQP
-    .WithBindMount("./config.json", "/ServiceBus_Emulator/config.json"); // your queues/topics config
+var serviceBus = builder.AddAzureServiceBus("myservicebus")
+                        .RunAsEmulator(emulator =>
+                        {
+                            emulator.WithConfigurationFile(@"config\servicebus-config.json");
+                        });
+
+// Add Service Bus queue or topic
+serviceBus.AddServiceBusQueue("myqueue");
+
+
+
+//// Service Bus Emulator container
+//var sbEmu = builder.AddContainer("servicebus-emulator", "mcr.microsoft.com/azure-messaging/service-bus-emulator:latest")
+//    .WithEnvironment("ACCEPT_EULA", "Y")
+//    .WithEnvironment("MSSQL_SA_PASSWORD", "YourStrong!Pass123")
+//    .WithEndpoint(name: "sb", targetPort: 5672, isProxied: false) // AMQP
+//    .WithBindMount("./config.json", "/ServiceBus_Emulator/config.json"); // your queues/topics config
 
 // Minimal API service
 // add references to projects that you wish to view in Aspire orchestrator

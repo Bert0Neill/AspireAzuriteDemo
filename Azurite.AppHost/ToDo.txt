@@ -1,0 +1,1 @@
+﻿https://github.com/Azure/azure-service-bus-emulator-installer?utm_source=chatgpt.com
