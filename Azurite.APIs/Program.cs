@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.SignalR;
 using Scalar.AspNetCore;
-using Azurite.APIs;
+using Azurite.APIs.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 

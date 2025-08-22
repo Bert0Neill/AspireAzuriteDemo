@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace Azurite.APIs
+namespace Azurite.APIs.Hubs
 {
     public class MyHub : Hub
     {
