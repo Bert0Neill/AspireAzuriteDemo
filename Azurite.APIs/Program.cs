@@ -1,23 +1,28 @@
 using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// Configure Azure SignalR
+builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalR"));
+
+// Configure Azure Service Bus client
 string connectionString = builder.Configuration["ServiceBus:ConnectionString"]!;
 string queueName = "myqueue";
-
-// Register ServiceBusSender
 builder.Services.AddSingleton(_ => new ServiceBusClient(connectionString));
-builder.Services.AddSingleton(sp =>
-    sp.GetRequiredService<ServiceBusClient>().CreateSender(queueName));
+builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queueName));
 
 
 var app = builder.Build();
+
+// Map SignalR hub
+app.MapHub<MyHub>("/hub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

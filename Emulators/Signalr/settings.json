@@ -1,0 +1,5 @@
+{
+  "urls": ["http://localhost:5000"],
+  "logFile": "C:\\Users\\ONeillB\\source\\repos\\AspireAzuriteDemo\\Emulators\\signalr-emulator.log",
+  "upstreamSettings": {}
+}

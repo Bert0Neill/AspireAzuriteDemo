@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36408.4 d17.14
+VisualStudioVersion = 17.14.36408.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.AppHost", "Azurite.AppHost\Azurite.AppHost.csproj", "{96C5C8E9-EFAC-4B9A-8722-6B7A6B4B92E3}"
 EndProject
@@ -12,6 +12,26 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServiceBus", "ServiceBus", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppServiceBusClient", "ConsoleAppServiceBusClient\ConsoleAppServiceBusClient.csproj", "{8C189B26-C333-4DB0-9494-0DC71F891602}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Emulators", "Emulators", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Emulators\azurite-debug.log = Emulators\azurite-debug.log
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SignalR", "SignalR", "{2B3905D3-640E-4C2C-B81B-751D274037A6}"
+	ProjectSection(SolutionItems) = preProject
+		Emulators\Signalr\settings.json = Emulators\Signalr\settings.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azurite-data", "Azurite-data", "{74BCFE25-CB6B-4AFC-8F49-E81D980A5AD7}"
+	ProjectSection(SolutionItems) = preProject
+		Emulators\Azurite-data\AzuriteConfig = Emulators\Azurite-data\AzuriteConfig
+		Emulators\Azurite-data\__azurite_db_blob_extent__.json = Emulators\Azurite-data\__azurite_db_blob_extent__.json
+		Emulators\Azurite-data\__azurite_db_blob__.json = Emulators\Azurite-data\__azurite_db_blob__.json
+		Emulators\Azurite-data\__azurite_db_queue_extent__.json = Emulators\Azurite-data\__azurite_db_queue_extent__.json
+		Emulators\Azurite-data\__azurite_db_queue__.json = Emulators\Azurite-data\__azurite_db_queue__.json
+		Emulators\Azurite-data\__azurite_db_table__.json = Emulators\Azurite-data\__azurite_db_table__.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +61,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8C189B26-C333-4DB0-9494-0DC71F891602} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{2B3905D3-640E-4C2C-B81B-751D274037A6} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
+		{74BCFE25-CB6B-4AFC-8F49-E81D980A5AD7} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0D1756BD-945E-4340-AA40-3C3F5921FE40}
