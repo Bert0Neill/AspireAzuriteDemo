@@ -1,5 +1,6 @@
 {
-  "urls": ["http://localhost:5000"],
-  "logFile": "C:\\Users\\ONeillB\\source\\repos\\AspireAzuriteDemo\\Emulators\\signalr-emulator.log",
-  "upstreamSettings": {}
+  "urls": [ "http://localhost:8888" ],
+  "accessKey": "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH",
+  "upstreamSettings": {},
+  "logFile": "C:\\Users\\ONeillB\\source\\repos\\AspireAzuriteDemo\\Emulators\\signalr-emulator.log"
 }

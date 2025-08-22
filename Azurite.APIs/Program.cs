@@ -3,14 +3,23 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.SignalR;
 using Scalar.AspNetCore;
+using Azurite.APIs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddOpenApi();
 
+// If Aspire injected the connection string into environment or config
+var azureSignalRConnectionString = builder.Configuration.GetConnectionString("AzureSignalR");
+
+// Register SignalR
+builder.Services.AddSignalR().AddAzureSignalR(azureSignalRConnectionString);
+
 // Configure Azure SignalR
-builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalR"));
+//builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalR"));
+
+
 
 // Configure Azure Service Bus client
 string connectionString = builder.Configuration["ServiceBus:ConnectionString"]!;

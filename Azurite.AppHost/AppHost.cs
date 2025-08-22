@@ -2,14 +2,19 @@ using Microsoft.Azure.SignalR;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-// Register Azure SignalR Emulator resource
-var signalR = builder.AddConnectionString("AzureSignalR", "Endpoint=http://localhost:5001;AccessKey=YOUR_KEY");
 
-// Register Azure Service Bus Emulator resource
+// Local Azure SignalR emulator
+var signalR = builder.AddConnectionString(
+    "AzureSignalR",
+    "Endpoint=http://localhost;Port=8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH;Version=1.0;"
+);
+
+// Local Azure Service Bus emulator
 var serviceBus = builder.AddConnectionString(
     "AzureServiceBus",
     "Endpoint=sb://localhost/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Eby8vdM02xNOcqFeqCg=="
 );
+
 
 
 // Reference your Web API project
