@@ -6,8 +6,9 @@ var builder = DistributedApplication.CreateBuilder(args);
 // Local Azure SignalR emulator
 var signalR = builder.AddConnectionString(
     "AzureSignalR",
-    "Endpoint=http://localhost;Port=8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH;Version=1.0;"
+    "Endpoint=http://127.0.0.1:5001;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH"
 );
+
 
 // Local Azure Service Bus emulator
 var serviceBus = builder.AddConnectionString(
