@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Emulators", "Emulators", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		Emulators\azurite-debug.log = Emulators\azurite-debug.log
+		..\..\..\Downloads\Azurite.one = ..\..\..\Downloads\Azurite.one
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SignalR", "SignalR", "{2B3905D3-640E-4C2C-B81B-751D274037A6}"
