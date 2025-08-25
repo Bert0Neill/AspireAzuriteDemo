@@ -38,6 +38,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.Fnx_MonitorServiceb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.SignalR", "Azurite.SignalR\Azurite.SignalR.csproj", "{F82AE490-4B86-7122-8684-E430DA4D9C7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.Extensions", "Azurite.Extensions\Azurite.Extensions.csproj", "{08D68E2D-BBC5-4171-ACAF-934F94BB421E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{F82AE490-4B86-7122-8684-E430DA4D9C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F82AE490-4B86-7122-8684-E430DA4D9C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F82AE490-4B86-7122-8684-E430DA4D9C7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08D68E2D-BBC5-4171-ACAF-934F94BB421E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08D68E2D-BBC5-4171-ACAF-934F94BB421E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08D68E2D-BBC5-4171-ACAF-934F94BB421E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08D68E2D-BBC5-4171-ACAF-934F94BB421E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
