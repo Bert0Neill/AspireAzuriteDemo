@@ -22,8 +22,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Azurite.APIs\Azurite.APIs.csproj" />
-    <ProjectReference Include="..\Azurite.AzFnx_MonitorServicebus\Azurite.AzFnx_MonitorServicebusQueue.csproj" />
+    <ProjectReference Include="..\Azurite.AzFnx_MonitorServicebus\Azurite.Fnx_MonitorServicebusQueue.csproj" />
     <ProjectReference Include="..\Azurite.BlazorWasmApp\Azurite.BlazorWasmApp.csproj" />
+    <ProjectReference Include="..\Azurite.SignalR\Azurite.SignalR.csproj" />
     <ProjectReference Include="..\ConsoleAppServiceBusClient\ConsoleAppServiceBusClient.csproj" />
   </ItemGroup>
 

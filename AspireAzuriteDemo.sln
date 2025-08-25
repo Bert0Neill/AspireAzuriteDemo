@@ -34,7 +34,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azurite-data", "Azurite-dat
 		Emulators\Azurite-data\__azurite_db_table__.json = Emulators\Azurite-data\__azurite_db_table__.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.AzFnx_MonitorServicebusQueue", "Azurite.AzFnx_MonitorServicebus\Azurite.AzFnx_MonitorServicebusQueue.csproj", "{74F8ACFA-9D15-C762-C104-1598A36EF3B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.Fnx_MonitorServicebusQueue", "Azurite.AzFnx_MonitorServicebus\Azurite.Fnx_MonitorServicebusQueue.csproj", "{74F8ACFA-9D15-C762-C104-1598A36EF3B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.SignalR", "Azurite.SignalR\Azurite.SignalR.csproj", "{F82AE490-4B86-7122-8684-E430DA4D9C7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +64,10 @@ Global
 		{74F8ACFA-9D15-C762-C104-1598A36EF3B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74F8ACFA-9D15-C762-C104-1598A36EF3B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74F8ACFA-9D15-C762-C104-1598A36EF3B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F82AE490-4B86-7122-8684-E430DA4D9C7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F82AE490-4B86-7122-8684-E430DA4D9C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F82AE490-4B86-7122-8684-E430DA4D9C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F82AE490-4B86-7122-8684-E430DA4D9C7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
