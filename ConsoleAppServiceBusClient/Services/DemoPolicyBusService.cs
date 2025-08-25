@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleAppServiceBusClient.Services
 {
-    public  class DemoPolicyBusService : BackgroundService
+    public class DemoPolicyBusService : BackgroundService
     {
 
         private readonly ServiceBusClient _client;

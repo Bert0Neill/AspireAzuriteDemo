@@ -21,11 +21,14 @@ builder.Services.AddSignalR().AddAzureSignalR(azureSignalRConnectionString);
 
 
 
-// Configure Azure Service Bus client
-string connectionString = builder.Configuration["ServiceBus:ConnectionString"]!;
+// Configure Azure Service Bus client using Aspire connection string
+var serviceBusConnectionString = builder.Configuration["ConnectionStrings:AzureServiceBus"];
 string queueName = "myqueue";
-builder.Services.AddSingleton(_ => new ServiceBusClient(connectionString));
-builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queueName));
+if (serviceBusConnectionString != null)
+{
+    builder.Services.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
+    builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queueName));
+}
 
 
 var app = builder.Build();
