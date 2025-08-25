@@ -6,16 +6,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Azurite.AzFnx_MonitorServicebus
 {
-    public class Function1
+    public class ServiceBusFunction_Queue
     {
-        private readonly ILogger<Function1> _logger;
+        private readonly ILogger<ServiceBusFunction_Queue> _logger;
 
-        public Function1(ILogger<Function1> logger)
+        public ServiceBusFunction_Queue(ILogger<ServiceBusFunction_Queue> logger)
         {
             _logger = logger;
         }
 
-        [Function(nameof(Function1))]
+        [Function(nameof(ServiceBusFunction_Queue))]
         public async Task Run(
             [ServiceBusTrigger("myqueue", Connection = "myservicebus")]
             ServiceBusReceivedMessage message,

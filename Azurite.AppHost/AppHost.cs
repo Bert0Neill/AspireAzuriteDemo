@@ -1,30 +1,26 @@
 using Aspire.Hosting;
 using Microsoft.Azure.SignalR;
 using Aspire.Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Configuration;
 
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+// load setting form appsetting file (DEV\UAT\PROD etc.)
+//builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+//                     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+//                     .AddEnvironmentVariables();
+
+
 // Local Azure Service Bus emulator
 var serviceBus = builder
-    .AddAzureServiceBus("myservicebus")
+    .AddAzureServiceBus("insurancePolicies")
+#if DEBUG
     .RunAsEmulator(c => c.WithLifetime(ContainerLifetime.Persistent));
-
-serviceBus.AddServiceBusQueue("myqueue");
-
-//// Service Bus Emulator container - load queues/topics from config file
-//var projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\"));
-//var configPath = Path.Combine(projectRoot, "config.json");
-
-//var sb = builder.AddAzureServiceBus("servicebus")
-//                .RunAsEmulator(emulator =>
-//                {
-//                    emulator.WithImageTag("1.1.2");
-//                    emulator.WithConfigurationFile(Path.Combine(projectRoot, "config.json"));
-//                    emulator.WithReference(sql); // 👈 tells Aspire to connect to your SQL resource
-//                });
-
-
+#endif
+serviceBus.AddServiceBusQueue("carExcess");
+serviceBus.AddServiceBusTopic("propertyContent");
+serviceBus.AddServiceBusTopic("propertyStructure");
 
 //var sbEmu = builder.AddContainer("servicebus-emulator", "mcr.microsoft.com/azure-messaging/service-bus-emulator")
 //    .WithEnvironment("ACCEPT_EULA", "Y")
@@ -39,127 +35,29 @@ serviceBus.AddServiceBusQueue("myqueue");
 //);
 
 
-//// Local Azure Service Bus emulator
-//var serviceBus = builder.AddConnectionString(
-//    "AzureServiceBus",
-//    "Endpoint=sb://localhost/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Eby8vdM02xNOcqFeqCg=="
-//);
+// Reference your Fnx project
+var fnxQ = builder.AddProject<Projects.Azurite_Fnx_MonitorServicebusQueue>("Azurite-Fnx-Q")
+               .WithReference(serviceBus)
+               .WaitFor(serviceBus);
+
+// Reference your SignalR project
+var signalR = builder.AddProject<Projects.Azurite_SignalR>("Azurite-SignalR")
+                .WithReference(fnxQ)
+                .WaitFor(fnxQ);
 
 
+// Reference your Blazor WASM project
+var blazor = builder.AddProject<Projects.Azurite_BlazorWasmApp>("Azurite-BlazorWasmApp")
+               .WaitFor(serviceBus);
 
-//// Reference your Web API project
-//builder.AddProject<Projects.Azurite_APIs>("webapi")
-//       .WithReference(signalR)
-//       .WithReference(serviceBus);
-
-//// Reference your Blazor WASM project
-//builder.AddProject<Projects.Azurite_BlazorWasmApp>("azurite-BlazorWasmApp");
-
-//// Reference your Console App Service Bus Client project
-//builder.AddProject<Projects.ConsoleAppServiceBusClient>("azurite-ConsoleAppServiceBusClient")
-//       .WithReference(serviceBus);
-
-//builder.AddAzureFunctionsProject<Projects.Azurite_AzFnx_MonitorServicebusQueue>("azurite-azfnx-monitorservicebus");
-
-
-//// Add Azure Service Bus and configure to run as emulator
-//var serviceBus = builder.AddAzureServiceBus("myservicebus")
-//                        .RunAsEmulator(emulator =>
-//                        {
-//                            emulator.WithConfigurationFile(@"config\servicebus-config.json");
-//                        });
-
-//// Add Service Bus queue or topic
-//serviceBus.AddServiceBusQueue("myqueue");
-
-
-
-
+// Reference your Web API project
+var api = builder.AddProject<Projects.Azurite_APIs>("Azurite-Api")
+           .WithReference(blazor);
 
 // Minimal API service
 // add references to projects that you wish to view in Aspire orchestrator
 //builder.AddProject<Projects.Azurite_APIs>("azurite-APIs")
 //    .WithEnvironment("ServiceBus__ConnectionString",
 //        "Endpoint=sb://servicebus-emulator/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=DummyKey;UseDevelopmentEmulator=true;");
-
-
-//var serviceBus = builder.AddAzureServiceBus("DemoAzuriteServiceBus").RunAsEmulator().AddServiceBusQueue("DemoPoliciesQueue");
-//builder.AddProject<Projects.ConsoleAppServiceBusClient>("azurite-ConsoleAppServiceBusClient").WithReference(serviceBus).WaitFor(serviceBus);
-
-builder.AddProject<Projects.Azurite_SignalR>("azurite-signalr");
-
-//// Service Bus Emulator container - load queues/topics from config file
-//var projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\"));
-//var configPath = Path.Combine(projectRoot, "config.json");
-
-//var sb = builder.AddAzureServiceBus("servicebus")
-//                .RunAsEmulator(emulator =>
-//                {
-//                    emulator.WithImageTag("1.1.2");
-//                    emulator.WithConfigurationFile(Path.Combine(projectRoot, "config.json"));
-//                    emulator.WithReference(sql); // 👈 tells Aspire to connect to your SQL resource
-//                });
-
-
-
-//var sbEmu = builder.AddContainer("servicebus-emulator", "mcr.microsoft.com/azure-messaging/service-bus-emulator")
-//    .WithEnvironment("ACCEPT_EULA", "Y")
-//    .WithEnvironment("MSSQL_SA_PASSWORD", "YourStrong!Pass123")
-//    .WithEndpoint(name: "sb", targetPort: 5672, isProxied: false) // AMQP
-//    .WithBindMount(configPath, "/ServiceBus_Emulator/config.json"); // your queues/topics config
-
-//// Local Azure SignalR emulator
-//var signalR = builder.AddConnectionString(
-//    "AzureSignalR",
-//    "Endpoint=http://127.0.0.1:8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH"
-//);
-
-
-//// Local Azure Service Bus emulator
-//var serviceBus = builder.AddConnectionString(
-//    "AzureServiceBus",
-//    "Endpoint=sb://localhost/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Eby8vdM02xNOcqFeqCg=="
-//);
-
-
-
-//// Reference your Web API project
-//builder.AddProject<Projects.Azurite_APIs>("webapi")
-//       .WithReference(signalR)
-//       .WithReference(serviceBus);
-
-//// Reference your Blazor WASM project
-//builder.AddProject<Projects.Azurite_BlazorWasmApp>("azurite-BlazorWasmApp");
-
-//// Reference your Console App Service Bus Client project
-//builder.AddProject<Projects.ConsoleAppServiceBusClient>("azurite-ConsoleAppServiceBusClient")
-//       .WithReference(serviceBus);
-
-//builder.AddAzureFunctionsProject<Projects.Azurite_AzFnx_MonitorServicebusQueue>("azurite-azfnx-monitorservicebus");
-
-
-//// Add Azure Service Bus and configure to run as emulator
-//var serviceBus = builder.AddAzureServiceBus("myservicebus")
-//                        .RunAsEmulator(emulator =>
-//                        {
-//                            emulator.WithConfigurationFile(@"config\servicebus-config.json");
-//                        });
-
-//// Add Service Bus queue or topic
-//serviceBus.AddServiceBusQueue("myqueue");
-
-
-
-
-
-// Minimal API service
-// add references to projects that you wish to view in Aspire orchestrator
-//builder.AddProject<Projects.Azurite_APIs>("azurite-APIs")
-//    .WithEnvironment("ServiceBus__ConnectionString",
-//        "Endpoint=sb://servicebus-emulator/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=DummyKey;UseDevelopmentEmulator=true;");
-
-
-//var serviceBus = builder.AddAzureServiceBus("DemoAzuriteServiceBus").RunAsEmulator().AddServiceBusQueue("DemoPoliciesQueue");
-//builder.AddProject<Projects.ConsoleAppServiceBusClient>("azurite-ConsoleAppServiceBusClient").WithReference(serviceBus).WaitFor(serviceBus);
 
 builder.Build().Run();
