@@ -1,36 +1,65 @@
+﻿using Aspire.Hosting;
 using Microsoft.Azure.SignalR;
+using Aspire.Azure.Messaging.ServiceBus;
+
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-
-// Local Azure SignalR emulator
-var signalR = builder.AddConnectionString(
-    "AzureSignalR",
-    "Endpoint=http://127.0.0.1:8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH"
-);
-
-
 // Local Azure Service Bus emulator
-var serviceBus = builder.AddConnectionString(
-    "AzureServiceBus",
-    "Endpoint=sb://localhost/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Eby8vdM02xNOcqFeqCg=="
-);
+var serviceBus = builder
+    .AddAzureServiceBus("myservicebus")
+    .RunAsEmulator(c => c.WithLifetime(ContainerLifetime.Persistent));
+
+serviceBus.AddServiceBusQueue("myqueue");
+
+//// Service Bus Emulator container - load queues/topics from config file
+//var projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\"));
+//var configPath = Path.Combine(projectRoot, "config.json");
+
+//var sb = builder.AddAzureServiceBus("servicebus")
+//                .RunAsEmulator(emulator =>
+//                {
+//                    emulator.WithImageTag("1.1.2");
+//                    emulator.WithConfigurationFile(Path.Combine(projectRoot, "config.json"));
+//                    emulator.WithReference(sql); // 👈 tells Aspire to connect to your SQL resource
+//                });
 
 
 
-// Reference your Web API project
-builder.AddProject<Projects.Azurite_APIs>("webapi")
-       .WithReference(signalR)
-       .WithReference(serviceBus);
+//var sbEmu = builder.AddContainer("servicebus-emulator", "mcr.microsoft.com/azure-messaging/service-bus-emulator")
+//    .WithEnvironment("ACCEPT_EULA", "Y")
+//    .WithEnvironment("MSSQL_SA_PASSWORD", "YourStrong!Pass123")
+//    .WithEndpoint(name: "sb", targetPort: 5672, isProxied: false) // AMQP
+//    .WithBindMount(configPath, "/ServiceBus_Emulator/config.json"); // your queues/topics config
 
-// Reference your Blazor WASM project
-builder.AddProject<Projects.Azurite_BlazorWasmApp>("azurite-BlazorWasmApp");
+//// Local Azure SignalR emulator
+//var signalR = builder.AddConnectionString(
+//    "AzureSignalR",
+//    "Endpoint=http://127.0.0.1:8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH"
+//);
 
-// Reference your Console App Service Bus Client project
-builder.AddProject<Projects.ConsoleAppServiceBusClient>("azurite-ConsoleAppServiceBusClient")
-       .WithReference(serviceBus);
 
-builder.AddAzureFunctionsProject<Projects.Azurite_AzFnx_MonitorServicebus>("azurite-azfnx-monitorservicebus");
+//// Local Azure Service Bus emulator
+//var serviceBus = builder.AddConnectionString(
+//    "AzureServiceBus",
+//    "Endpoint=sb://localhost/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Eby8vdM02xNOcqFeqCg=="
+//);
+
+
+
+//// Reference your Web API project
+//builder.AddProject<Projects.Azurite_APIs>("webapi")
+//       .WithReference(signalR)
+//       .WithReference(serviceBus);
+
+//// Reference your Blazor WASM project
+//builder.AddProject<Projects.Azurite_BlazorWasmApp>("azurite-BlazorWasmApp");
+
+//// Reference your Console App Service Bus Client project
+//builder.AddProject<Projects.ConsoleAppServiceBusClient>("azurite-ConsoleAppServiceBusClient")
+//       .WithReference(serviceBus);
+
+//builder.AddAzureFunctionsProject<Projects.Azurite_AzFnx_MonitorServicebusQueue>("azurite-azfnx-monitorservicebus");
 
 
 //// Add Azure Service Bus and configure to run as emulator
@@ -45,12 +74,7 @@ builder.AddAzureFunctionsProject<Projects.Azurite_AzFnx_MonitorServicebus>("azur
 
 
 
-//// Service Bus Emulator container
-//var sbEmu = builder.AddContainer("servicebus-emulator", "mcr.microsoft.com/azure-messaging/service-bus-emulator:latest")
-//    .WithEnvironment("ACCEPT_EULA", "Y")
-//    .WithEnvironment("MSSQL_SA_PASSWORD", "YourStrong!Pass123")
-//    .WithEndpoint(name: "sb", targetPort: 5672, isProxied: false) // AMQP
-//    .WithBindMount("./config.json", "/ServiceBus_Emulator/config.json"); // your queues/topics config
+
 
 // Minimal API service
 // add references to projects that you wish to view in Aspire orchestrator

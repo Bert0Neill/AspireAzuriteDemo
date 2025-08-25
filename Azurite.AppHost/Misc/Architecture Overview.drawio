@@ -1,0 +1,117 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36" version="27.0.4">
+  <diagram name="Page-1" id="qlqmdjj7lYhHK9RTWwp4">
+    <mxGraphModel dx="1183" dy="654" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="UtsDx52lvK_Zac4_STEu-3" value="Docker Container" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="600" y="184" width="200" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-4" value="Azure ServiceBus Emulator" style="rounded=0;whiteSpace=wrap;html=1;flipV=1;flipH=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-3">
+          <mxGeometry x="25" y="40" width="150" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-5" value="Azure SignalR Emulator" style="rounded=0;whiteSpace=wrap;html=1;flipV=1;flipH=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-3">
+          <mxGeometry x="25" y="70" width="150" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-6" value="Azure Storage Emulator" style="rounded=0;whiteSpace=wrap;html=1;flipV=1;flipH=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-3">
+          <mxGeometry x="25" y="100" width="150" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-44" value="Azure Fnx&#39;s Emulator" style="rounded=0;whiteSpace=wrap;html=1;flipV=1;flipH=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-3">
+          <mxGeometry x="25" y="132" width="150" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-7" value="Aspire Container" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="50" y="10" width="470" height="550" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-8" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-7">
+          <mxGeometry x="20" y="51" width="430" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="UtsDx52lvK_Zac4_STEu-7" source="UtsDx52lvK_Zac4_STEu-9" target="UtsDx52lvK_Zac4_STEu-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-37" value="Push Message" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="UtsDx52lvK_Zac4_STEu-21">
+          <mxGeometry x="-0.0308" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-9" value="API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-7">
+          <mxGeometry x="300" y="213" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="UtsDx52lvK_Zac4_STEu-7" source="UtsDx52lvK_Zac4_STEu-42" target="UtsDx52lvK_Zac4_STEu-9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="130" y="112.25" as="sourcePoint" />
+            <mxPoint x="270" y="117.75" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-11" value="Azure Fnx (Monitor Q)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-7">
+          <mxGeometry x="120" y="433" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-19" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="UtsDx52lvK_Zac4_STEu-7" source="UtsDx52lvK_Zac4_STEu-12" target="UtsDx52lvK_Zac4_STEu-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-35" value="Broadcast" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="UtsDx52lvK_Zac4_STEu-19">
+          <mxGeometry x="0.0266" y="1" relative="1" as="geometry">
+            <mxPoint x="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-34" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="UtsDx52lvK_Zac4_STEu-7" source="UtsDx52lvK_Zac4_STEu-12" target="UtsDx52lvK_Zac4_STEu-32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-36" value="Broadcast" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="UtsDx52lvK_Zac4_STEu-34">
+          <mxGeometry x="0.0476" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-12" value="SignalR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-7">
+          <mxGeometry x="30" y="333" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-13" value="Service Bus (Q\Topic)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-7">
+          <mxGeometry x="245" y="333" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.448;entryY=1.103;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="UtsDx52lvK_Zac4_STEu-7" source="UtsDx52lvK_Zac4_STEu-11" target="UtsDx52lvK_Zac4_STEu-12">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="160" y="400" />
+              <mxPoint x="111" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-39" value="Push Msg" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="UtsDx52lvK_Zac4_STEu-29">
+          <mxGeometry x="0.1411" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.703;entryY=1.132;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classic;startFill=0;endArrow=none;" edge="1" parent="UtsDx52lvK_Zac4_STEu-7" source="UtsDx52lvK_Zac4_STEu-11" target="UtsDx52lvK_Zac4_STEu-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="310" y="400" />
+              <mxPoint x="379" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-40" value="Monitor Msg" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="UtsDx52lvK_Zac4_STEu-31">
+          <mxGeometry x="-0.1553" y="1" relative="1" as="geometry">
+            <mxPoint x="2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-32" value="WASM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-7">
+          <mxGeometry x="50" y="121" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-10" value="WASM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-7">
+          <mxGeometry x="140" y="121" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-42" value="Clients" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-7">
+          <mxGeometry x="36" y="86" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-43" value="&lt;b&gt;Aspire Host&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="UtsDx52lvK_Zac4_STEu-7">
+          <mxGeometry x="206" y="28" width="85" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UtsDx52lvK_Zac4_STEu-14" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=default;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" edge="1" parent="UtsDx52lvK_Zac4_STEu-7" target="UtsDx52lvK_Zac4_STEu-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="450" y="260" as="sourcePoint" />
+            <mxPoint x="540" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

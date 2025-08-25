@@ -11,9 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Azure.Messaging.ServiceBus" Version="9.4.1" />
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
     <PackageReference Include="Aspire.Hosting.Azure.Functions" Version="(9.3-*,9.4]" />
     <PackageReference Include="Aspire.Hosting.Azure.ServiceBus" Version="9.4.1" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.4.1" />
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.4.1" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.31.0" />
   </ItemGroup>
 
@@ -22,6 +25,12 @@
     <ProjectReference Include="..\Azurite.AzFnx_MonitorServicebus\Azurite.AzFnx_MonitorServicebusQueue.csproj" />
     <ProjectReference Include="..\Azurite.BlazorWasmApp\Azurite.BlazorWasmApp.csproj" />
     <ProjectReference Include="..\ConsoleAppServiceBusClient\ConsoleAppServiceBusClient.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Misc\Docker\config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

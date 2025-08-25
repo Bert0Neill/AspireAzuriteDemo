@@ -1,0 +1,10 @@
+﻿Docker - AzureServiceBus emulator - not a project
+Docker - Azure SignalR emulator - not a project
+Docker - Azure Storage emulator (Blob, Queue, table) - not a project
+
+Aspire (appHost)
+
+Minimal API to push onto AzureServiceBus
+Azure Fnx (listen ServiceBus & call SignalR to push to clients)
+Azure SignalR (reg client and push messages) - bridge client & server
+Blazor WASM (Client)

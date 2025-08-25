@@ -1,0 +1,1 @@
+﻿docker compose -f "C:\Users\ONeillB\source\repos\AspireAzuriteDemo\Azurite.AppHost\Misc\Docker\docker-compose.yaml" up -d
