@@ -4,43 +4,73 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.SignalR;
 using Scalar.AspNetCore;
 using Azurite.APIs.Hubs;
+using System.Runtime.CompilerServices;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddAzureServiceBusClient("insurancePolicies");
+
+var serviceBusConnectionString = builder.Configuration.GetConnectionString("sbemulat");
+string queueInsurancePolicies = "insurancePolicies";
+string topicPropertyContent = "propertyContent";
+
+// Register ServiceBusClient and ServiceBusSender
+if (serviceBusConnectionString != null)
+{
+    builder.Services.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
+    builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queueInsurancePolicies));
+}
+
+
+
 // Add services to the container.
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
 
-// If Aspire injected the connection string into environment or config
-var azureSignalRConnectionString = builder.Configuration.GetConnectionString("AzureSignalR");
 
-// Register SignalR
-builder.Services.AddSignalR().AddAzureSignalR(azureSignalRConnectionString);
+
+
+//// If Aspire injected the connection string into environment or config
+//var azureSignalRConnectionString = builder.Configuration.GetConnectionString("AzureSignalR");
+
+//// Register SignalR
+//builder.Services.AddSignalR().AddAzureSignalR(azureSignalRConnectionString);
 
 // Configure Azure SignalR
 //builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalR"));
 
 
 
+
 // Configure Azure Service Bus client using Aspire connection string
-var serviceBusConnectionString = builder.Configuration["ConnectionStrings:AzureServiceBus"];
-string queueName = "myqueue";
-if (serviceBusConnectionString != null)
-{
-    builder.Services.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
-    builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queueName));
-}
+//var serviceBusConnectionString = builder.Configuration["ConnectionStrings:myservicebus"];
+
+//if (serviceBusConnectionString != null)
+//{
+//    builder.Services.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
+//    builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queueName));
+//}
 
 
 var app = builder.Build();
 
-// Map SignalR hub
-app.MapHub<MyHub>("/hub");
+
+
+
+//// Map SignalR hub
+//app.MapHub<MyHub>("/hub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(options =>
+    {
+        options
+        .WithTitle("Your Custom Title")
+        .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+    });
 
 }
 
@@ -52,6 +82,7 @@ var summaries = new[]
 };
 
 
+
 app.MapPost("/send", async (ServiceBusSender sender, MessageDto message) =>
 {
     var serviceBusMessage = new ServiceBusMessage(message.Text)
@@ -61,7 +92,7 @@ app.MapPost("/send", async (ServiceBusSender sender, MessageDto message) =>
 
     await sender.SendMessageAsync(serviceBusMessage);
 
-    return Results.Ok($"Message sent to queue '{queueName}'");
+    return Results.Ok($"Message sent to queue '{queueInsurancePolicies}'");
 
     //// push forecast to Service Bus queue
     //ServiceBusSender _sender = busClient.CreateSender("DemoPoliciesQueue");

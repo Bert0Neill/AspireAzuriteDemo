@@ -1,8 +1,9 @@
-using System;
-using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace Azurite.AzFnx_MonitorServicebus
 {
@@ -17,13 +18,16 @@ namespace Azurite.AzFnx_MonitorServicebus
 
         [Function(nameof(ServiceBusFunction_Queue))]
         public async Task Run(
-            [ServiceBusTrigger("myqueue", Connection = "myservicebus")]
+            [ServiceBusTrigger("insurancePolicies", Connection = "sbemulat")]
             ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions)
         {
             _logger.LogInformation("Message ID: {id}", message.MessageId);
             _logger.LogInformation("Message Body: {body}", message.Body);
             _logger.LogInformation("Message Content-Type: {contentType}", message.ContentType);
+
+            // Push to SignalR clients
+            //await _hubContext.Clients.All.SendAsync("ReceiveMessage", message.Body.ToString());
 
             // Complete the message
             await messageActions.CompleteMessageAsync(message);
