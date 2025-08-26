@@ -9,17 +9,17 @@ using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddAzureServiceBusClient("insurancePolicies");
+builder.AddAzureServiceBusClient("propertyContent");
 
-var serviceBusConnectionString = builder.Configuration.GetConnectionString("sbemulat");
-string queueInsurancePolicies = "insurancePolicies";
-string topicPropertyContent = "propertyContent";
+var serviceBusConnectionString = builder.Configuration.GetConnectionString("sbInsurancePolicies");
+string queuePropertyContentPolicy = "propertyContent";
+
 
 // Register ServiceBusClient and ServiceBusSender
 if (serviceBusConnectionString != null)
 {
     builder.Services.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
-    builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queueInsurancePolicies));
+    builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queuePropertyContentPolicy));
 }
 
 
@@ -92,7 +92,7 @@ app.MapPost("/send", async (ServiceBusSender sender, MessageDto message) =>
 
     await sender.SendMessageAsync(serviceBusMessage);
 
-    return Results.Ok($"Message sent to queue '{queueInsurancePolicies}'");
+    return Results.Ok($"Message sent to queue '{queuePropertyContentPolicy}'");
 
     //// push forecast to Service Bus queue
     //ServiceBusSender _sender = busClient.CreateSender("DemoPoliciesQueue");

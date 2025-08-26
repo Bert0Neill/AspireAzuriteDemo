@@ -1,24 +1,31 @@
+using Aspire.Azure.Messaging.ServiceBus;
 using Aspire.Hosting;
 using Microsoft.Azure.SignalR;
-using Aspire.Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Scalar.Aspire;
+using System.ComponentModel;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
 var scalar = builder.AddScalarApiReference();
+
+/**************************************************
+ *          Ensure Docker is running!!!           *
+ **************************************************/
 
 // Add caching with Redis
 var cache = builder.AddRedis("cache")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithRedisInsight();
 
+#region SQL Server
 // Add SQL Server 
 //var passwordParameter = builder.AddParameter("password", "P@ssw0rd");
 //var sql = builder
 //    .AddSqlServer("sql", port: 58349, password: passwordParameter)
 //    .WithLifetime(ContainerLifetime.Persistent);
 ////.AddDatabase("servicebus-db"); // Database for Service Bus emulator
+#endregion
 
 // load setting form appsetting file (DEV\UAT\PROD etc.)
 //builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -28,14 +35,40 @@ var cache = builder.AddRedis("cache")
 
 // Local Azure Service Bus emulator
 var serviceBus = builder
-    .AddAzureServiceBus("sbemulat")
+    .AddAzureServiceBus("sbInsurancePolicies")
 #if DEBUG
-    .RunAsEmulator(c => c.WithLifetime(ContainerLifetime.Persistent));
-    //.RunAsEmulator();
+    //.RunAsEmulator(c => c.WithLifetime(ContainerLifetime.Persistent));    
+    .RunAsEmulator();
 #endif
-serviceBus.AddServiceBusQueue("insurancePolicies");
-//serviceBus.AddServiceBusTopic("propertyContent");
+serviceBus.AddServiceBusQueue("propertyContent");
 //serviceBus.AddServiceBusTopic("propertyStructure");
+
+// Reference Azurite (Blob + Queue + Table)
+var driveRoot = Path.GetPathRoot(Environment.CurrentDirectory);
+var azuriteDataPath = Path.Combine(driveRoot!, "Azurite"); // Combine it with "Azurite"
+if (!Directory.Exists(azuriteDataPath))
+{
+    Directory.CreateDirectory(azuriteDataPath);
+}
+
+var azurite = builder.AddContainer("Azurite-Storage-Emulator", "mcr.microsoft.com/azure-storage/azurite")
+    .WithBindMount(azuriteDataPath, "/Azurite-Data")
+    .WithEndpoint(10000, 10000, name: "blob")   // Blob service
+    .WithEndpoint(10001, 10001, name: "queue")  // Queue service
+    .WithEndpoint(10002, 10002, name: "table"); // Table service
+
+// Build ReferenceExpression dynamically using container endpoints
+var azuriteConnExpr = ReferenceExpression.Create($@"
+        DefaultEndpointsProtocol=http;
+        AccountName=devstoreaccount1;
+        AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;
+        BlobEndpoint={azurite.GetEndpoint("blob")}/devstoreaccount1;
+        QueueEndpoint={azurite.GetEndpoint("queue")}/devstoreaccount1;
+        TableEndpoint={azurite.GetEndpoint("table")}/devstoreaccount1;
+        ");
+
+// Add connection string resource using the ReferenceExpression
+var azuriteConn = builder.AddConnectionString("Azurite-Storage-Conns", azuriteConnExpr);
 
 #region Hide
 //var sbEmu = builder.AddContainer("servicebus-emulator", "mcr.microsoft.com/azure-messaging/service-bus-emulator")
@@ -53,7 +86,9 @@ serviceBus.AddServiceBusQueue("insurancePolicies");
 
 // Reference your Fnx project
 var fnxQ = builder.AddProject<Projects.Azurite_Fnx_MonitorServicebusQueue>("Azurite-Fnx-Q")
-               .WithReference(serviceBus)
+               .WithReference(serviceBus)               
+               .WithReference(azuriteConn) // inject Azurite connection string
+               .WaitFor(azurite)
                .WaitFor(serviceBus);
 
 // Reference your Blazor WASM project
@@ -71,6 +106,5 @@ var signalR = builder.AddProject<Projects.Azurite_SignalR>("Azurite-SignalR")
                 .WithReference(fnxQ) // fnx retrieves message from Queue
                 .WithReference(api) // api pushes message onto Queue
                 .WaitFor(fnxQ);
-
 
 builder.Build().Run();

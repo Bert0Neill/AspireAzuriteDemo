@@ -18,7 +18,7 @@ namespace Azurite.AzFnx_MonitorServicebus
 
         [Function(nameof(ServiceBusFunction_Queue))]
         public async Task Run(
-            [ServiceBusTrigger("insurancePolicies", Connection = "sbemulat")]
+            [ServiceBusTrigger("propertyContent", Connection = "sbInsurancePolicies")]
             ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions)
         {
