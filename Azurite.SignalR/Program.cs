@@ -5,8 +5,8 @@ using Microsoft.Azure.SignalR.Management;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services
 builder.Services.AddControllers();
-
 builder.Services.AddSignalR()
     .AddAzureSignalR(options =>
     {
@@ -18,12 +18,15 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("https://localhost:5001", "http://localhost:5000")
+        builder.WithOrigins("https://localhost:5001", "http://localhost:5000", "https://localhost:7154", "https://localhost:7207", "https://localhost:7201")
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials();
     });
 });
+
+// Add hosted service for periodic messages
+builder.Services.AddHostedService<MessageBroadcastService>();
 
 //// Allow Blazor client origin
 //builder.Services.AddCors(options =>
@@ -58,9 +61,6 @@ builder.Services.AddCors(options =>
 //    });
 
 //builder.Services.AddHostedService<TimedMessageService>();
-
-// Add hosted service for periodic messages
-builder.Services.AddHostedService<MessageBroadcastService>();
 
 var app = builder.Build();
 

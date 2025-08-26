@@ -95,7 +95,7 @@
         messages = SignalRService.GetMessages();
         connectionStatus = SignalRService.GetConnectionState();
 
-        await SignalRService.StartAsync();
+        await SignalRService.StartAsync(userName);
     }
 
     private void OnMessagesChanged(List<ChatMessage> newMessages)
@@ -131,7 +131,7 @@
 
     private async Task Connect()
     {
-        await SignalRService.StartAsync();
+        await SignalRService.StartAsync(userName);
     }
 
     private async Task Disconnect()

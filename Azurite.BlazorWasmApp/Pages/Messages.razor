@@ -18,9 +18,10 @@
 </ul>
 
 @code {
-    private HubConnection? hubConnection;
-    private List<string> messages = new();
+    private List<ChatMessage> messages = new();
     private string connectionStatus = "Disconnected";
+    private string userName = "Anonymous";
+    private string messageText = "";
 
     protected override async Task OnInitializedAsync()
     {
