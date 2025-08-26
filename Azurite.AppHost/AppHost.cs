@@ -105,7 +105,7 @@ var signalR = builder.AddProject<Projects.Azurite_SignalR>("Azurite-SignalR")
 // Reference your Blazor WASM project
 var blazor = builder.AddProject<Projects.Azurite_BlazorWasmApp>("Azurite-BlazorWasmApp")
                .WithReference(signalR)
-               .WaitFor(serviceBus)
-               .WaitFor(cache);
+               .WaitFor(serviceBus);
+               //.WaitFor(cache);
 
 builder.Build().Run();

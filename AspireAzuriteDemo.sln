@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.SignalR", "Azurite.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.Extensions", "Azurite.Extensions\Azurite.Extensions.csproj", "{08D68E2D-BBC5-4171-ACAF-934F94BB421E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.SharedModels", "Azurite.SharedModels\Azurite.SharedModels.csproj", "{35CF55A7-09EF-49AC-8536-1577DA6233D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{08D68E2D-BBC5-4171-ACAF-934F94BB421E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08D68E2D-BBC5-4171-ACAF-934F94BB421E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08D68E2D-BBC5-4171-ACAF-934F94BB421E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35CF55A7-09EF-49AC-8536-1577DA6233D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35CF55A7-09EF-49AC-8536-1577DA6233D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35CF55A7-09EF-49AC-8536-1577DA6233D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35CF55A7-09EF-49AC-8536-1577DA6233D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

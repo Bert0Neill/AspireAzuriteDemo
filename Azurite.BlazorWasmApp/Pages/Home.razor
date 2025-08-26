@@ -1,7 +1,148 @@
 ﻿@page "/"
+@using Azurite.BlazorWasmApp.Services
+@using Azurite.SharedModels
+@inject SignalRService SignalRService
+@implements IDisposable
 
-<PageTitle>Home</PageTitle>
+<PageTitle>SignalR Chat</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1>SignalR Chat with Azure SignalR Emulator</h1>
+            <div class="alert alert-info">
+                Connection Status: <strong>@connectionStatus</strong>
+            </div>
+        </div>
+    </div>
 
-Welcome to your new app.
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Messages (@messages.Count)</h5>
+                </div>
+                <div class="card-body" style="height: 400px; overflow-y: auto;">
+                    @if (messages.Any())
+                    {
+                        @foreach (var message in messages)
+                        {
+                            <div class="message mb-2 p-2 border-bottom">
+                                <div class="d-flex justify-content-between">
+                                    <strong>@message.User</strong>
+                                    <small class="text-muted">@message.Timestamp.ToString("HH:mm:ss")</small>
+                                </div>
+                                <div>@message.Message</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">No messages yet...</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Send Message</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="userName" class="form-label">Your Name:</label>
+                        <input @bind="userName" type="text" class="form-control" id="userName" placeholder="Enter your name" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageText" class="form-label">Message:</label>
+                        <textarea @bind="messageText" @onkeypress="HandleKeyPress" class="form-control" id="messageText" rows="3" placeholder="Type your message..."></textarea>
+                    </div>
+                    <button @onclick="SendMessage" class="btn btn-primary w-100" disabled="@(!IsConnected)">
+                        Send Message
+                    </button>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Connection Controls</h5>
+                </div>
+                <div class="card-body">
+                    <button @onclick="Connect" class="btn btn-success w-100 mb-2" disabled="@IsConnected">
+                        Connect
+                    </button>
+                    <button @onclick="Disconnect" class="btn btn-danger w-100" disabled="@(!IsConnected)">
+                        Disconnect
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<ChatMessage> messages = new();
+    private string connectionStatus = "Disconnected";
+    private string userName = "Anonymous";
+    private string messageText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        SignalRService.MessagesChanged += OnMessagesChanged;
+        SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
+
+        messages = SignalRService.GetMessages();
+        connectionStatus = SignalRService.GetConnectionState();
+
+        await SignalRService.StartAsync();
+    }
+
+    private void OnMessagesChanged(List<ChatMessage> newMessages)
+    {
+        messages = newMessages;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnConnectionStateChanged(string newStatus)
+    {
+        connectionStatus = newStatus;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private bool IsConnected => connectionStatus == "Connected";
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageText) && IsConnected)
+        {
+            await SignalRService.SendMessageAsync(userName, messageText);
+            messageText = "";
+        }
+    }
+
+    private async Task HandleKeyPress(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await SendMessage();
+        }
+    }
+
+    private async Task Connect()
+    {
+        await SignalRService.StartAsync();
+    }
+
+    private async Task Disconnect()
+    {
+        await SignalRService.StopAsync();
+        connectionStatus = "Disconnected";
+    }
+
+    public void Dispose()
+    {
+        SignalRService.MessagesChanged -= OnMessagesChanged;
+        SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
+    }
+}
