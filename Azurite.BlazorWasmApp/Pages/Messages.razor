@@ -1,6 +1,9 @@
 ﻿@page "/messages"
+@using Azurite.BlazorWasmApp.Services
+@using Azurite.SharedModels
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Nav
+@inject SignalRService SignalRService
 
 <PageTitle>Messages</PageTitle>
 
@@ -25,32 +28,63 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // hubConnection = new HubConnectionBuilder()
-        //     .WithUrl("https://localhost:5001/chathub") // Server hub URL 5000
-        //     .WithAutomaticReconnect()
-        //     .Build();
+        SignalRService.MessagesChanged += OnMessagesChanged;
+        SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
 
-        hubConnection = new HubConnectionBuilder()
-           .WithUrl(Nav.ToAbsoluteUri("/chatHub")) // Calls ASP.NET Core hub
-           .WithAutomaticReconnect()
-           .Build();
-        
+        messages = SignalRService.GetMessages();
+        connectionStatus = SignalRService.GetConnectionState();
 
-        hubConnection.On<string>("ReceiveMessage", msg =>
-        {
-            messages.Add(msg);
-            InvokeAsync(StateHasChanged);
-        });
+        await SignalRService.StartAsync(userName);
+    }
 
-        try
+    private void OnMessagesChanged(List<ChatMessage> newMessages)
+    {
+        messages = newMessages;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnConnectionStateChanged(string newStatus)
+    {
+        connectionStatus = newStatus;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private bool IsConnected => connectionStatus == "Connected";
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageText) && IsConnected)
         {
-            await hubConnection.StartAsync();
-            connectionStatus = "Connected";
-        }
-        catch (Exception ex)
-        {
-            connectionStatus = $"Error: {ex.Message}";
+            await SignalRService.SendMessageAsync(userName, messageText);
+            messageText = "";
         }
     }
+
+    private async Task HandleKeyPress(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await SendMessage();
+        }
+    }
+
+    private async Task Connect()
+    {
+        await SignalRService.StartAsync(userName);
+    }
+
+    private async Task Disconnect()
+    {
+        await SignalRService.StopAsync();
+        connectionStatus = "Disconnected";
+    }
+
+    public void Dispose()
+    {
+        SignalRService.MessagesChanged -= OnMessagesChanged;
+        SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
+    }
+
 }
+
 
