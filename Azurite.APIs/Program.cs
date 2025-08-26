@@ -93,12 +93,6 @@ app.MapPost("/send", async (ServiceBusSender sender, MessageDto message) =>
     await sender.SendMessageAsync(serviceBusMessage);
 
     return Results.Ok($"Message sent to queue '{queuePropertyContentPolicy}'");
-
-    //// push forecast to Service Bus queue
-    //ServiceBusSender _sender = busClient.CreateSender("DemoPoliciesQueue");
-    //ServiceBusMessage message = new(forecast.ToString());
-    //await _sender.SendMessageAsync(message);
-
 });
 
 app.MapGet("/weatherforecast", async (ServiceBusClient busClient) =>
