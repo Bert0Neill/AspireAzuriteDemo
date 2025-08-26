@@ -91,11 +91,6 @@ var fnxQ = builder.AddProject<Projects.Azurite_Fnx_MonitorServicebusQueue>("Azur
                .WaitFor(azurite)
                .WaitFor(serviceBus);
 
-// Reference your Blazor WASM project
-var blazor = builder.AddProject<Projects.Azurite_BlazorWasmApp>("Azurite-BlazorWasmApp")
-               .WaitFor(serviceBus)
-               .WaitFor(cache);
-
 // Reference your Web API project
 var api = builder.AddProject<Projects.Azurite_APIs>("Azurite-Api")        
            .WithReference(serviceBus)
@@ -106,5 +101,11 @@ var signalR = builder.AddProject<Projects.Azurite_SignalR>("Azurite-SignalR")
                 .WithReference(fnxQ) // fnx retrieves message from Queue
                 .WithReference(api) // api pushes message onto Queue
                 .WaitFor(fnxQ);
+
+// Reference your Blazor WASM project
+var blazor = builder.AddProject<Projects.Azurite_BlazorWasmApp>("Azurite-BlazorWasmApp")
+               .WithReference(signalR)
+               .WaitFor(serviceBus)
+               .WaitFor(cache);
 
 builder.Build().Run();

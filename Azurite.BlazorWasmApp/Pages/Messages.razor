@@ -1,0 +1,55 @@
+﻿@page "/messages"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Nav
+
+<PageTitle>Messages</PageTitle>
+
+<h3>Server Messages</h3>
+
+<p>
+    Connection status: <strong>@connectionStatus</strong>
+</p>
+
+<ul class="list-group">
+    @foreach (var msg in messages)
+    {
+        <li class="list-group-item">@msg</li>
+    }
+</ul>
+
+@code {
+    private HubConnection? hubConnection;
+    private List<string> messages = new();
+    private string connectionStatus = "Disconnected";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // hubConnection = new HubConnectionBuilder()
+        //     .WithUrl("https://localhost:5001/chathub") // Server hub URL 5000
+        //     .WithAutomaticReconnect()
+        //     .Build();
+
+        hubConnection = new HubConnectionBuilder()
+           .WithUrl(Nav.ToAbsoluteUri("/chatHub")) // Calls ASP.NET Core hub
+           .WithAutomaticReconnect()
+           .Build();
+        
+
+        hubConnection.On<string>("ReceiveMessage", msg =>
+        {
+            messages.Add(msg);
+            InvokeAsync(StateHasChanged);
+        });
+
+        try
+        {
+            await hubConnection.StartAsync();
+            connectionStatus = "Connected";
+        }
+        catch (Exception ex)
+        {
+            connectionStatus = $"Error: {ex.Message}";
+        }
+    }
+}
+

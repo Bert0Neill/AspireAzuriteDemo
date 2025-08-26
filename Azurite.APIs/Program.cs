@@ -31,14 +31,14 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 
-//// If Aspire injected the connection string into environment or config
-//var azureSignalRConnectionString = builder.Configuration.GetConnectionString("AzureSignalR");
+// If Aspire injected the connection string into environment or config
+var azureSignalRConnectionString = builder.Configuration.GetConnectionString("AzureSignalR");
 
-//// Register SignalR
-//builder.Services.AddSignalR().AddAzureSignalR(azureSignalRConnectionString);
+// Register SignalR
+builder.Services.AddSignalR().AddAzureSignalR(azureSignalRConnectionString);
 
 // Configure Azure SignalR
-//builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalR"));
+builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalR"));
 
 
 
