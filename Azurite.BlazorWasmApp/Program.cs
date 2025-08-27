@@ -1,46 +1,57 @@
-//using Microsoft.AspNetCore.Components.Web;
-//using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-//using Azurite.BlazorWasmApp;
-
-//var builder = WebAssemblyHostBuilder.CreateDefault(args);
-//builder.RootComponents.Add<App>("#app");
-//builder.RootComponents.Add<HeadOutlet>("head::after");
-
-//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
-//await builder.Build().RunAsync();
-
 using Azurite.BlazorWasmApp;
-using Azurite.BlazorWasmApp.Services;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Update this URL to match your server's actual port
+// Set the client URL in code
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7201") // Check your server's launchSettings.json
+    BaseAddress = new Uri("http://localhost:5001/")
 });
 
-//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddScoped<SignalRService>();
 
-//// Connect to SignalR
-//builder.Services.AddSingleton(sp =>
+//// Update this URL to match your server's actual port
+//builder.Services.AddScoped(sp => new HttpClient
 //{
-//    var hubConnection = new HubConnectionBuilder()
-//        .WithUrl("https://localhost:5001/chatHub") // your Web API endpoint
+//    BaseAddress = new Uri("https://localhost:7201") // Check your server's launchSettings.json
+//});
+
+//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+//// Register HubConnection
+builder.Services.AddSingleton(provider =>
+{
+    var nav = provider.GetRequiredService<NavigationManager>();
+    return new HubConnectionBuilder()
+        //.WithUrl($"{nav.BaseUri}hubs/chat") // uses same origin as Blazor app
+        //.WithUrl("http://localhost:5000/hubs/chat")
+        .WithUrl("https://localhost:7240/hubs/chat")
+
+        .WithAutomaticReconnect()
+        .Build();
+});
+
+
+//// Register HubConnection
+//builder.Services.AddSingleton(provider =>
+//{
+//    // Connect directly to the server's SignalR endpoint
+//    return new HubConnectionBuilder()
+//        //.WithUrl("http://localhost:5000/hubs/chat")
+//        .WithUrl("https://localhost:5001/hubs/chat")
 //        .WithAutomaticReconnect()
 //        .Build();
-
-//    hubConnection.StartAsync(); // start immediately
-
-//    return hubConnection;
 //});
+
+
+
+
 
 await builder.Build().RunAsync();
 

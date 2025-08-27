@@ -1,8 +1,8 @@
 ﻿@page "/"
-@using Azurite.BlazorWasmApp.Services
 @using Azurite.SharedModels
-@inject SignalRService SignalRService
+@using Microsoft.AspNetCore.SignalR.Client
 @implements IDisposable
+@inject HubConnection HubConnection
 
 <PageTitle>SignalR Chat</PageTitle>
 
@@ -87,62 +87,131 @@
     private string userName = "Anonymous";
     private string messageText = "";
 
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     // Register handler
+    //     HubConnection.On<string, string, DateTime>("ReceiveMessage", (user, message, timestamp) =>
+    //     {
+    //         Console.WriteLine($"{timestamp:T} {user}: {message}");
+    //     });
+
+    //     // Start connection
+    //     if (HubConnection.State == HubConnectionState.Disconnected)
+    //     {
+    //         await HubConnection.StartAsync();
+    //     }
+
+    //     // Send a test message
+    //     await HubConnection.SendAsync("SendMessageToAll", "Me", "Hello world!");
+    // }
+
     protected override async Task OnInitializedAsync()
     {
-        SignalRService.MessagesChanged += OnMessagesChanged;
-        SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
+        try{
+        if (HubConnection.State == HubConnectionState.Disconnected)
+        {
+            // Listen for messages
+            HubConnection.On<string, string, DateTime>("ReceiveMessage", (user, msg, ts) =>
+            {
+                Console.WriteLine($"{ts:T} {user}: {msg}");
+            });
 
-        messages = SignalRService.GetMessages();
-        connectionStatus = SignalRService.GetConnectionState();
-
-        await SignalRService.StartAsync(userName);
+            await HubConnection.StartAsync(); // calls negotiate and connect
+        }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"SignalR Connection Error: {ex.Message}");
+        }
     }
 
-    private void OnMessagesChanged(List<ChatMessage> newMessages)
+    // private async Task SendMessage()
+    // {
+    //     await HubConnection.SendAsync("SendMessageToAll", "Me", "Hello world!");
+    // }
+
+    private async Task Send()
     {
-        messages = newMessages;
-        InvokeAsync(StateHasChanged);
+        // if (!string.IsNullOrEmpty(userInput) && !string.IsNullOrEmpty(messageInput))
+        // {
+        //     await HubConnection.SendAsync("SendMessage", userInput, messageInput);
+        //     messageInput = "";
+        // }
     }
 
-    private void OnConnectionStateChanged(string newStatus)
+    private async Task HandleKeyPress(KeyboardEventArgs e)
     {
-        connectionStatus = newStatus;
-        InvokeAsync(StateHasChanged);
+        if (e.Key == "Enter")
+        {
+            await Send();
+        }
     }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (HubConnection is not null)
+        {
+            await HubConnection.DisposeAsync();
+        }
+    }
+
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     SignalRService.MessagesChanged += OnMessagesChanged;
+    //     SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
+
+    //     messages = SignalRService.GetMessages();
+    //     connectionStatus = SignalRService.GetConnectionState();
+
+    //     await SignalRService.StartAsync(userName);
+    // }
+
+    // private void OnMessagesChanged(List<ChatMessage> newMessages)
+    // {
+    //     messages = newMessages;
+    //     InvokeAsync(StateHasChanged);
+    // }
+
+    // private void OnConnectionStateChanged(string newStatus)
+    // {
+    //     connectionStatus = newStatus;
+    //     InvokeAsync(StateHasChanged);
+    // }
 
     private bool IsConnected => connectionStatus == "Connected";
 
     private async Task SendMessage()
     {
-        if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageText) && IsConnected)
-        {
-            await SignalRService.SendMessageAsync(userName, messageText);
-            messageText = "";
-        }
+        // if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageText) && IsConnected)
+        // {
+        //     await SignalRService.SendMessageAsync(userName, messageText);
+        //     messageText = "";
+        // }
     }
 
-    private async Task HandleKeyPress(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter" && !e.ShiftKey)
-        {
-            await SendMessage();
-        }
-    }
+    // private async Task HandleKeyPress(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    // {
+    //     if (e.Key == "Enter" && !e.ShiftKey)
+    //     {
+    //         await SendMessage();
+    //     }
+    // }
 
     private async Task Connect()
     {
-        await SignalRService.StartAsync(userName);
+        //await SignalRService.StartAsync(userName);
     }
 
     private async Task Disconnect()
     {
-        await SignalRService.StopAsync();
+        //await SignalRService.StopAsync();
         connectionStatus = "Disconnected";
     }
 
     public void Dispose()
     {
-        SignalRService.MessagesChanged -= OnMessagesChanged;
-        SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
+        // SignalRService.MessagesChanged -= OnMessagesChanged;
+        // SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
     }
 }

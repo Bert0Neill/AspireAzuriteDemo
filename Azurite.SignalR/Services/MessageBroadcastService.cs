@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Azurite.SignalR.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 
 namespace Azurite.SignalR.Services

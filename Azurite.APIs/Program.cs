@@ -9,11 +9,12 @@ using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
+/**********************************
+ *          Service Bus           *
+ **********************************/
 builder.AddAzureServiceBusClient("propertyContent");
-
 var serviceBusConnectionString = builder.Configuration.GetConnectionString("sbInsurancePolicies");
 string queuePropertyContentPolicy = "propertyContent";
-
 
 // Register ServiceBusClient and ServiceBusSender
 if (serviceBusConnectionString != null)
@@ -22,14 +23,9 @@ if (serviceBusConnectionString != null)
     builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queuePropertyContentPolicy));
 }
 
-
-
 // Add services to the container.
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
-
-
-
 
 // If Aspire injected the connection string into environment or config
 var azureSignalRConnectionString = builder.Configuration.GetConnectionString("AzureSignalR");
@@ -40,26 +36,7 @@ builder.Services.AddSignalR().AddAzureSignalR(azureSignalRConnectionString);
 // Configure Azure SignalR
 builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalR"));
 
-
-
-
-// Configure Azure Service Bus client using Aspire connection string
-//var serviceBusConnectionString = builder.Configuration["ConnectionStrings:myservicebus"];
-
-//if (serviceBusConnectionString != null)
-//{
-//    builder.Services.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
-//    builder.Services.AddSingleton(sp => sp.GetRequiredService<ServiceBusClient>().CreateSender(queueName));
-//}
-
-
 var app = builder.Build();
-
-
-
-
-//// Map SignalR hub
-//app.MapHub<MyHub>("/hub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

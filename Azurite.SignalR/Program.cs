@@ -1,24 +1,53 @@
-using Azurite.SignalR.Classes;
+﻿using Azurite.SignalR.Hubs;
 using Azurite.SignalR.Services;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Azure.SignalR.Management;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// With this:
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
+// Add Azure SignalR emulator
+builder.Services.AddSignalR().AddAzureSignalR("Endpoint=http://localhost:8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH;Version=1.0;");
+    
+
+//builder.Services.AddSignalR().AddAzureSignalR(); // no parameters for emulator
+
+
 // Add services
 builder.Services.AddControllers();
-builder.Services.AddSignalR()
-    .AddAzureSignalR(options =>
-    {
-        // Use emulator connection string
-        options.ConnectionString = "Endpoint=http://localhost:8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH;Version=1.0;";
-    });
+
+//builder.Services.AddSignalR().AddAzureSignalR(options =>
+//    {
+//        // Use emulator connection string
+//        options.ConnectionString = "Endpoint=http://localhost:8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH;Version=1.0;";
+//    });
+
+
+
+
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddDefaultPolicy(builder =>
+//    {
+//        builder.WithOrigins("https://localhost:5001", "http://localhost:5000", "https://localhost:7154", "https://localhost:7207", "https://localhost:7201")
+//               .AllowAnyHeader()
+//               .AllowAnyMethod()
+//               .AllowCredentials();
+//    });
+//});
 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("https://localhost:5001", "http://localhost:5000", "https://localhost:7154", "https://localhost:7207", "https://localhost:7201")
+        builder.WithOrigins("https://localhost:5001", "http://localhost:5000",
+                           "https://localhost:7154", "https://localhost:7207",
+                           "https://localhost:7201", "https://localhost:7240")
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials();
@@ -28,49 +57,17 @@ builder.Services.AddCors(options =>
 // Add hosted service for periodic messages
 builder.Services.AddHostedService<MessageBroadcastService>();
 
-//// Allow Blazor client origin
-//builder.Services.AddCors(options =>
-//{
-//    options.AddDefaultPolicy(policy =>
-//    {
-//        policy.WithOrigins("https://localhost:7207") // Blazor WASM URL
-//              .AllowAnyHeader()
-//              .AllowAnyMethod()
-//              .AllowCredentials(); // Required for SignalR
-//    });
-//});
-
-//builder.Services.AddCors(options =>
-//{
-//    options.AddDefaultPolicy(builder =>
-//    {
-//        builder.WithOrigins("https://localhost:5001", "http://localhost:5000")
-//               .AllowAnyHeader()
-//               .AllowAnyMethod()
-//               .AllowCredentials();
-//    });
-//});
-
-
-//// Add SignalR
-//builder.Services.AddSignalR()
-//    .AddAzureSignalR(options =>
-//    {
-//        // Point to emulator instance
-//        options.ConnectionString = "Endpoint=http://localhost;Port=8888;AccessKey=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGH;Version=1.0;";
-//    });
-
-//builder.Services.AddHostedService<TimedMessageService>();
 
 var app = builder.Build();
 
 // Configure pipeline
 app.UseCors();
 app.UseRouting();
-
 app.MapControllers();
-app.MapHub<ChatHub>("/chathub");
+
+//app.MapHub<ChatHub>("/chatHub");
+app.MapHub<ChatHub>("/hubs/chat"); // 👈 must match client URL
 app.Run();
 
-public class ChatHub : Hub { }
+//public class ChatHub : Hub { }
 

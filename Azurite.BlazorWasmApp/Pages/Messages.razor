@@ -1,9 +1,8 @@
 ﻿@page "/messages"
-@using Azurite.BlazorWasmApp.Services
 @using Azurite.SharedModels
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Nav
-@inject SignalRService SignalRService
+@inject HubConnection HubConnection
 
 <PageTitle>Messages</PageTitle>
 
@@ -28,14 +27,33 @@
 
     protected override async Task OnInitializedAsync()
     {
-        SignalRService.MessagesChanged += OnMessagesChanged;
-        SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
+        // Register handler
+        HubConnection.On<string, string, DateTime>("ReceiveMessage", (user, message, timestamp) =>
+        {
+            Console.WriteLine($"{timestamp:T} {user}: {message}");
+        });
 
-        messages = SignalRService.GetMessages();
-        connectionStatus = SignalRService.GetConnectionState();
+        // Start connection
+        if (HubConnection.State == HubConnectionState.Disconnected)
+        {
+            await HubConnection.StartAsync();
+        }
 
-        await SignalRService.StartAsync(userName);
+        // Send a test message
+        await HubConnection.SendAsync("SendMessageToAll", "Me", "Hello world!");
     }
+
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     SignalRService.MessagesChanged += OnMessagesChanged;
+    //     SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
+
+    //     messages = SignalRService.GetMessages();
+    //     connectionStatus = SignalRService.GetConnectionState();
+
+    //     await SignalRService.StartAsync(userName);
+    // }
 
     private void OnMessagesChanged(List<ChatMessage> newMessages)
     {
@@ -55,7 +73,7 @@
     {
         if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageText) && IsConnected)
         {
-            await SignalRService.SendMessageAsync(userName, messageText);
+            // await SignalRService.SendMessageAsync(userName, messageText);
             messageText = "";
         }
     }
@@ -70,19 +88,19 @@
 
     private async Task Connect()
     {
-        await SignalRService.StartAsync(userName);
+        // await SignalRService.StartAsync(userName);
     }
 
     private async Task Disconnect()
     {
-        await SignalRService.StopAsync();
+        // await SignalRService.StopAsync();
         connectionStatus = "Disconnected";
     }
 
     public void Dispose()
     {
-        SignalRService.MessagesChanged -= OnMessagesChanged;
-        SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
+        // SignalRService.MessagesChanged -= OnMessagesChanged;
+        // SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
     }
 
 }

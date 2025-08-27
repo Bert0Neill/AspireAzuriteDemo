@@ -9,6 +9,9 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
+
+
+
 namespace Azurite.Extensions;
 
 // Adds common .NET Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
@@ -117,5 +120,23 @@ public static class Extensions
 
         return app;
     }
+
+    //public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
+    //{
+    //    // Add Azure SignalR Service
+    //    builder.AddAzureSignalR("SignalR");
+
+    //    // Register HubConnectionFactory for Blazor clients
+    //    builder.Services.AddSingleton(provider =>
+    //    {
+    //        return new HubConnectionBuilder()
+    //            .WithUrl($"{builder.Configuration["ConnectionStrings:ApiService"]}/hubs/chat")
+    //            .WithAutomaticReconnect()
+    //            .Build();
+    //    });
+
+    //    return builder;
+    //}
+
 }
 
