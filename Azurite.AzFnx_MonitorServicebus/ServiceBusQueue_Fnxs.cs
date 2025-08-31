@@ -11,19 +11,19 @@ using System.Threading.Tasks;
 
 namespace Azurite.AzFnx_MonitorServicebus
 {
-    public class ServiceBusFunction_Queue
+    public class ServiceBusQueue_Fnxs
     {
-        private readonly ILogger<ServiceBusFunction_Queue> _logger;
+        private readonly ILogger<ServiceBusQueue_Fnxs> _logger;
         private readonly IServiceManager _serviceManager;
 
-        public ServiceBusFunction_Queue(ILogger<ServiceBusFunction_Queue> logger)
+        public ServiceBusQueue_Fnxs(ILogger<ServiceBusQueue_Fnxs> logger)
         {
             _logger = logger;
 
            
         }
 
-        [Function(nameof(ServiceBusFunction_Queue))]
+        [Function(nameof(ServiceBusQueue_Fnxs))]
         public async Task Run(
             [ServiceBusTrigger("propertyContent", Connection = "sbInsurancePolicies")]
             ServiceBusReceivedMessage message,
