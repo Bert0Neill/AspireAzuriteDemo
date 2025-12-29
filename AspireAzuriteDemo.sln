@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.BlazorWasmApp", "Az
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azurite.APIs", "Azurite.APIs\Azurite.APIs.csproj", "{569CFBD9-9654-CB6E-1214-A353EBD7ABE4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServiceBus", "ServiceBus", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServiceBusMonitor", "ServiceBusMonitor", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppServiceBusSub", "ConsoleAppServiceBusClient\ConsoleAppServiceBusSub.csproj", "{8C189B26-C333-4DB0-9494-0DC71F891602}"
 EndProject
