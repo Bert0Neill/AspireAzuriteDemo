@@ -29,7 +29,7 @@
     <ProjectReference Include="..\Azurite.BlazorWasmApp\Azurite.BlazorWasmApp.csproj" />
     <ProjectReference Include="..\Azurite.Extensions\Azurite.Extensions.csproj" />
     <ProjectReference Include="..\Azurite.SignalR\Azurite.SignalR.csproj" />
-    <ProjectReference Include="..\ConsoleAppServiceBusClient\ConsoleAppServiceBusClient.csproj" />
+    <ProjectReference Include="..\ConsoleAppServiceBusClient\ConsoleAppServiceBusSub.csproj" />
   </ItemGroup>
 
   <ItemGroup>
