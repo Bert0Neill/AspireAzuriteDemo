@@ -1,0 +1,185 @@
+@page "/blob"
+@using Azurite.BlazorWasmApp.Infrastructure
+@inject ApiService ApiService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Blob Storage Demo</PageTitle>
+
+<div class="container mt-4">
+    <h2>Azure Blob Storage (Azurite)</h2>
+    
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Upload Blob</h5>
+                </div>
+                <div class="card-body">
+                    <InputFile OnChange="HandleFileSelected" class="form-control mb-2" />
+                    <button class="btn btn-primary" @onclick="UploadFile" disabled="@(selectedFile == null || uploading)">
+                        @if (uploading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Upload
+                    </button>
+                    @if (!string.IsNullOrEmpty(uploadMessage))
+                    {
+                        <div class="alert alert-@(uploadSuccess ? "success" : "danger") mt-2">@uploadMessage</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Blobs (@blobs.Count)</h5>
+                    <button class="btn btn-sm btn-secondary" @onclick="RefreshBlobs" disabled="@loading">
+                        @if (loading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (loading)
+                    {
+                        <p>Loading...</p>
+                    }
+                    else if (blobs.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Last Modified</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var blob in blobs)
+                                {
+                                    <tr>
+                                        <td>@blob.Name</td>
+                                        <td>@FormatSize(blob.Size ?? 0)</td>
+                                        <td>@blob.LastModified?.ToString("g")</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteBlob(blob.Name)">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No blobs found. Upload a file to get started.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<BlobInfo> blobs = new();
+    private bool loading = false;
+    private bool uploading = false;
+    private string uploadMessage = "";
+    private bool uploadSuccess = false;
+    private IBrowserFile? selectedFile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshBlobs();
+    }
+
+    private async Task RefreshBlobs()
+    {
+        loading = true;
+        try
+        {
+            blobs = await ApiService.ListBlobsAsync();
+        }
+        catch (Exception ex)
+        {
+            uploadMessage = $"Error: {ex.Message}";
+            uploadSuccess = false;
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        uploadMessage = "";
+    }
+
+    private async Task UploadFile()
+    {
+        if (selectedFile == null) return;
+
+        uploading = true;
+        uploadMessage = "";
+        try
+        {
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB max
+            var url = await ApiService.UploadBlobAsync(stream, selectedFile.Name, selectedFile.ContentType);
+            uploadMessage = $"File uploaded successfully! URL: {url}";
+            uploadSuccess = true;
+            selectedFile = null;
+            await RefreshBlobs();
+        }
+        catch (Exception ex)
+        {
+            uploadMessage = $"Upload failed: {ex.Message}";
+            uploadSuccess = false;
+        }
+        finally
+        {
+            uploading = false;
+        }
+    }
+
+    private async Task DeleteBlob(string blobName)
+    {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Delete blob '{blobName}'?"))
+            return;
+
+        try
+        {
+            await ApiService.DeleteBlobAsync(blobName);
+            await RefreshBlobs();
+        }
+        catch (Exception ex)
+        {
+            uploadMessage = $"Delete failed: {ex.Message}";
+            uploadSuccess = false;
+        }
+    }
+
+    private string FormatSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+}
+

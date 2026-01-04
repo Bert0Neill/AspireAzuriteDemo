@@ -1,0 +1,249 @@
+@page "/queue"
+@using Azurite.BlazorWasmApp.Infrastructure
+@inject ApiService ApiService
+
+<PageTitle>Queue Storage Demo</PageTitle>
+
+<div class="container mt-4">
+    <h2>Azure Queue Storage (Azurite)</h2>
+    
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Send Message</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <label class="form-label">Message:</label>
+                        <input @bind="newMessage" class="form-control" @onkeydown="HandleKeyPress" />
+                    </div>
+                    <button class="btn btn-primary" @onclick="SendMessage" disabled="@sending">
+                        @if (sending)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Send Message
+                    </button>
+                    @if (!string.IsNullOrEmpty(message))
+                    {
+                        <div class="alert alert-@(success ? "success" : "danger") mt-2">@message</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Queue Info</h5>
+                    <button class="btn btn-sm btn-secondary" @onclick="RefreshQueueInfo" disabled="@loading">
+                        @if (loading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <p><strong>Messages in queue:</strong> @queueCount</p>
+                    <button class="btn btn-warning" @onclick="ClearQueue" disabled="@clearing">
+                        @if (clearing)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Clear Queue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Receive Messages</h5>
+                    <button class="btn btn-sm btn-primary" @onclick="ReceiveMessage" disabled="@receiving">
+                        @if (receiving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Receive Message
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (receivedMessages.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Message ID</th>
+                                    <th>Text</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var msg in receivedMessages)
+                                {
+                                    <tr>
+                                        <td>@msg.MessageId</td>
+                                        <td>@msg.Text</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteMessage(msg.MessageId, msg.PopReceipt)">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No messages received. Click "Receive Message" to get messages from the queue.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<QueueMessageInfo> receivedMessages = new();
+    private bool loading = false;
+    private bool sending = false;
+    private bool receiving = false;
+    private bool clearing = false;
+    private string message = "";
+    private bool success = false;
+    private string newMessage = "";
+    private int queueCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshQueueInfo();
+    }
+
+    private async Task RefreshQueueInfo()
+    {
+        loading = true;
+        try
+        {
+            queueCount = await ApiService.GetQueueLengthAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+            success = false;
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(newMessage))
+        {
+            message = "Message cannot be empty";
+            success = false;
+            return;
+        }
+
+        sending = true;
+        message = "";
+        try
+        {
+            await ApiService.SendQueueMessageAsync(newMessage);
+            message = "Message sent successfully!";
+            success = true;
+            newMessage = "";
+            await RefreshQueueInfo();
+        }
+        catch (Exception ex)
+        {
+            message = $"Send failed: {ex.Message}";
+            success = false;
+        }
+        finally
+        {
+            sending = false;
+        }
+    }
+
+    private async Task ReceiveMessage()
+    {
+        receiving = true;
+        try
+        {
+            var msg = await ApiService.ReceiveQueueMessageAsync();
+            if (msg != null)
+            {
+                receivedMessages.Insert(0, msg);
+                await RefreshQueueInfo();
+            }
+            else
+            {
+                message = "No messages in queue";
+                success = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Receive failed: {ex.Message}";
+            success = false;
+        }
+        finally
+        {
+            receiving = false;
+        }
+    }
+
+    private async Task DeleteMessage(string messageId, string popReceipt)
+    {
+        try
+        {
+            await ApiService.DeleteQueueMessageAsync(messageId, popReceipt);
+            receivedMessages.RemoveAll(m => m.MessageId == messageId);
+            await RefreshQueueInfo();
+        }
+        catch (Exception ex)
+        {
+            message = $"Delete failed: {ex.Message}";
+            success = false;
+        }
+    }
+
+    private async Task ClearQueue()
+    {
+        clearing = true;
+        try
+        {
+            await ApiService.ClearQueueAsync();
+            receivedMessages.Clear();
+            await RefreshQueueInfo();
+            message = "Queue cleared";
+            success = true;
+        }
+        catch (Exception ex)
+        {
+            message = $"Clear failed: {ex.Message}";
+            success = false;
+        }
+        finally
+        {
+            clearing = false;
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessage();
+        }
+    }
+}
+

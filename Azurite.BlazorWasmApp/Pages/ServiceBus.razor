@@ -1,0 +1,109 @@
+@page "/servicebus"
+@using Azurite.BlazorWasmApp.Infrastructure
+@inject ApiService ApiService
+
+<PageTitle>Service Bus Demo</PageTitle>
+
+<div class="container mt-4">
+    <h2>Azure Service Bus (Azurite Emulator)</h2>
+    
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Send Message</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <label class="form-label">Message:</label>
+                        <textarea @bind="newMessage" class="form-control" rows="3" @onkeydown="HandleKeyPress"></textarea>
+                    </div>
+                    <button class="btn btn-primary" @onclick="SendMessage" disabled="@sending">
+                        @if (sending)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        Send Message
+                    </button>
+                    @if (!string.IsNullOrEmpty(message))
+                    {
+                        <div class="alert alert-@(success ? "success" : "danger") mt-2">@message</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Sent Messages</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Messages sent to Service Bus queue. Check the Azure Functions project to see message processing.</p>
+                    @if (sentMessages.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var msg in sentMessages)
+                            {
+                                <li class="list-group-item">@msg</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No messages sent yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<string> sentMessages = new();
+    private bool sending = false;
+    private string message = "";
+    private bool success = false;
+    private string newMessage = "";
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(newMessage))
+        {
+            message = "Message cannot be empty";
+            success = false;
+            return;
+        }
+
+        sending = true;
+        message = "";
+        try
+        {
+            var result = await ApiService.SendServiceBusMessageAsync(newMessage);
+            message = result;
+            success = true;
+            sentMessages.Insert(0, $"[{DateTime.Now:HH:mm:ss}] {newMessage}");
+            newMessage = "";
+        }
+        catch (Exception ex)
+        {
+            message = $"Send failed: {ex.Message}";
+            success = false;
+        }
+        finally
+        {
+            sending = false;
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && e.CtrlKey)
+        {
+            await SendMessage();
+        }
+    }
+}
+

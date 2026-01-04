@@ -1,23 +1,85 @@
 ﻿@page "/messages"
 @using Azurite.SharedModels
 @using Microsoft.AspNetCore.SignalR.Client
-@inject NavigationManager Nav
+@implements IDisposable
 @inject HubConnection HubConnection
 
-<PageTitle>Messages</PageTitle>
+<PageTitle>SignalR Chat</PageTitle>
 
-<h3>Server Messages</h3>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>SignalR Chat with Azure SignalR Emulator</h2>
+            <div class="alert alert-info">
+                Connection Status: <strong>@connectionStatus</strong>
+            </div>
+        </div>
+    </div>
 
-<p>
-    Connection status: <strong>@connectionStatus</strong>
-</p>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Messages (@messages.Count)</h5>
+                </div>
+                <div class="card-body" style="height: 400px; overflow-y: auto;">
+                    @if (messages.Any())
+                    {
+                        @foreach (var message in messages)
+                        {
+                            <div class="message mb-2 p-2 border-bottom">
+                                <div class="d-flex justify-content-between">
+                                    <strong>@message.User</strong>
+                                    <small class="text-muted">@message.Timestamp.ToString("HH:mm:ss")</small>
+                                </div>
+                                <div>@message.Message</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">No messages yet...</p>
+                    }
+                </div>
+            </div>
+        </div>
 
-<ul class="list-group">
-    @foreach (var msg in messages)
-    {
-        <li class="list-group-item">@msg</li>
-    }
-</ul>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Send Message</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="userName" class="form-label">Your Name:</label>
+                        <input @bind="userName" type="text" class="form-control" id="userName" placeholder="Enter your name" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageText" class="form-label">Message:</label>
+                        <textarea @bind="messageText" @onkeydown="HandleKeyPress" class="form-control" id="messageText" rows="3" placeholder="Type your message..."></textarea>
+                    </div>
+                    <button @onclick="SendMessage" class="btn btn-primary w-100" disabled="@(!IsConnected)">
+                        Send Message
+                    </button>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Connection Controls</h5>
+                </div>
+                <div class="card-body">
+                    <button @onclick="Connect" class="btn btn-success w-100 mb-2" disabled="@IsConnected">
+                        Connect
+                    </button>
+                    <button @onclick="Disconnect" class="btn btn-danger w-100" disabled="@(!IsConnected)">
+                        Disconnect
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     private List<ChatMessage> messages = new();
@@ -27,58 +89,95 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Register handler
-        HubConnection.On<string, string, DateTime>("ReceiveMessage", (user, message, timestamp) =>
+        HubConnection.On<string, string, DateTime>("ReceiveMessage", (user, msg, timestamp) =>
         {
-            Console.WriteLine($"{timestamp:T} {user}: {message}");
+            var chatMessage = new ChatMessage
+            {
+                User = user,
+                Message = msg,
+                Timestamp = timestamp
+            };
+            messages.Insert(0, chatMessage);
+            InvokeAsync(StateHasChanged);
         });
 
-        // Start connection
-        if (HubConnection.State == HubConnectionState.Disconnected)
+        HubConnection.Closed += async (error) =>
         {
-            await HubConnection.StartAsync();
+            connectionStatus = "Disconnected";
+            await InvokeAsync(StateHasChanged);
+            if (error != null)
+            {
+                Console.WriteLine($"Connection closed: {error.Message}");
+            }
+        };
+
+        HubConnection.Reconnecting += async (error) =>
+        {
+            connectionStatus = "Reconnecting...";
+            await InvokeAsync(StateHasChanged);
+        };
+
+        HubConnection.Reconnected += async (connectionId) =>
+        {
+            connectionStatus = "Connected";
+            await InvokeAsync(StateHasChanged);
+        };
+    }
+
+    private bool IsConnected => HubConnection.State == HubConnectionState.Connected;
+
+    private async Task Connect()
+    {
+        try
+        {
+            if (HubConnection.State == HubConnectionState.Disconnected)
+            {
+                connectionStatus = "Connecting...";
+                await HubConnection.StartAsync();
+                connectionStatus = "Connected";
+            }
         }
-
-        // Send a test message
-        await HubConnection.SendAsync("SendMessageToAll", "Me", "Hello world!");
+        catch (Exception ex)
+        {
+            connectionStatus = $"Connection failed: {ex.Message}";
+        }
+        StateHasChanged();
     }
 
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     SignalRService.MessagesChanged += OnMessagesChanged;
-    //     SignalRService.ConnectionStateChanged += OnConnectionStateChanged;
-
-    //     messages = SignalRService.GetMessages();
-    //     connectionStatus = SignalRService.GetConnectionState();
-
-    //     await SignalRService.StartAsync(userName);
-    // }
-
-    private void OnMessagesChanged(List<ChatMessage> newMessages)
+    private async Task Disconnect()
     {
-        messages = newMessages;
-        InvokeAsync(StateHasChanged);
+        try
+        {
+            if (HubConnection.State != HubConnectionState.Disconnected)
+            {
+                await HubConnection.StopAsync();
+            }
+            connectionStatus = "Disconnected";
+        }
+        catch (Exception ex)
+        {
+            connectionStatus = $"Disconnect failed: {ex.Message}";
+        }
+        StateHasChanged();
     }
-
-    private void OnConnectionStateChanged(string newStatus)
-    {
-        connectionStatus = newStatus;
-        InvokeAsync(StateHasChanged);
-    }
-
-    private bool IsConnected => connectionStatus == "Connected";
 
     private async Task SendMessage()
     {
         if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageText) && IsConnected)
         {
-            // await SignalRService.SendMessageAsync(userName, messageText);
-            messageText = "";
+            try
+            {
+                await HubConnection.SendAsync("SendMessageToAll", userName, messageText);
+                messageText = "";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Send failed: {ex.Message}");
+            }
         }
     }
 
-    private async Task HandleKeyPress(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    private async Task HandleKeyPress(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" && !e.ShiftKey)
         {
@@ -86,23 +185,8 @@
         }
     }
 
-    private async Task Connect()
-    {
-        // await SignalRService.StartAsync(userName);
-    }
-
-    private async Task Disconnect()
-    {
-        // await SignalRService.StopAsync();
-        connectionStatus = "Disconnected";
-    }
-
     public void Dispose()
     {
-        // SignalRService.MessagesChanged -= OnMessagesChanged;
-        // SignalRService.ConnectionStateChanged -= OnConnectionStateChanged;
+        // HubConnection is disposed by DI container
     }
-
 }
-
-
