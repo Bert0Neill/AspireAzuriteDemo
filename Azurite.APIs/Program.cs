@@ -12,6 +12,14 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add User Secrets as the recommended local replacement for Key Vault
+// Secrets can be set using: dotnet user-secrets set "KeyVault:SecretName" "value"
+// Access via IConfiguration: configuration["KeyVault:SecretName"]
+builder.Configuration.AddUserSecrets<Program>(optional: true);
+
+// Add Aspire Redis distributed caching
+builder.AddRedisDistributedCache("cache");
+
 /**********************************
  *          Service Bus           *
  **********************************/
@@ -47,14 +55,17 @@ builder.Services.AddCors(options =>
     });
 });
 
-// If Aspire injected the connection string into environment or config
-var azureSignalRConnectionString = builder.Configuration.GetConnectionString("AzureSignalR");
-
-// Register SignalR
-builder.Services.AddSignalR().AddAzureSignalR(azureSignalRConnectionString);
-
-// Configure Azure SignalR
-builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetConnectionString("AzureSignalR"));
+// Add Azure SignalR - connection string will be injected by Aspire from the emulator reference
+var signalRConnectionString = builder.Configuration.GetConnectionString("Emulator-SignalR");
+if (!string.IsNullOrEmpty(signalRConnectionString))
+{
+    builder.Services.AddSignalR().AddAzureSignalR(signalRConnectionString);
+}
+else
+{
+    // Fallback to regular SignalR if connection string is not available
+    builder.Services.AddSignalR();
+}
 
 var app = builder.Build();
 
@@ -330,3 +341,6 @@ record TableEntityDto(string PartitionKey, string RowKey, string? Data);
 record QueueMessageDto(string Text);
 
 record SecretDto(string Name, string Value);
+
+// Program class for User Secrets configuration
+public partial class Program { }

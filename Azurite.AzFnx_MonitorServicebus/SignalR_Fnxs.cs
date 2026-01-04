@@ -12,7 +12,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Azurite.Fnx_MonitorServicebusQueue
+namespace Azurite.AzFnx_MonitorServicebus
 {
     public class SignalR_Fnxs
     {

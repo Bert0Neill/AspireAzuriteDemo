@@ -4,10 +4,12 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>Azurite-APIs-Secrets</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Azure.Messaging.ServiceBus" Version="9.4.1" />
+    <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.4.1" />
     <PackageReference Include="Azure.Data.Tables" Version="12.9.1" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.22.0" />
     <PackageReference Include="Azure.Storage.Queues" Version="12.20.0" />

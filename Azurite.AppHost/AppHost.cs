@@ -11,12 +11,11 @@ var cache = builder.AddRedis("cache")
     .WithRedisInsight();
 
 //#region SQL Server
-//// Add SQL Server 
-////var passwordParameter = builder.AddParameter("password", "P@ssw0rd");
-////var sql = builder
-////    .AddSqlServer("sql", port: 58349, password: passwordParameter)
-////    .WithLifetime(ContainerLifetime.Persistent);
-//////.AddDatabase("servicebus-db"); // Database for Service Bus emulator
+// Add SQL Server for Service Bus emulator
+var passwordParameter = builder.AddParameter("sqlPassword", "P@ssw0rd123!");
+var sql = builder
+    .AddSqlServer("sql", password: passwordParameter)
+    .WithLifetime(ContainerLifetime.Persistent);
 //#endregion
 
 //#region Load environment settings
@@ -69,9 +68,9 @@ var azuriteConnExpr = ReferenceExpression.Create($@"
 var azuriteConn = builder.AddConnectionString("AzuriteStorage", azuriteConnExpr);
 
 // Note: Azure Key Vault doesn't have an official emulator like Azurite.
-// The VaultService uses in-memory storage for local development.
+// Using User Secrets as the recommended local replacement for Key Vault.
+// Configure secrets in the API project using: dotnet user-secrets set "KeyVault:SecretName" "value"
 // For production, use Azure Key Vault with proper authentication.
-var keyVaultConn = builder.AddConnectionString("KeyVault", "http://localhost:8080");
 
 //// Reference your Fnx project
 //var fnxQ = builder.AddProject<Projects.Azurite_Fnx_MonitorServicebusQueue>("Azurite-Fnx-Q")
@@ -81,18 +80,20 @@ var keyVaultConn = builder.AddConnectionString("KeyVault", "http://localhost:808
 //               .WaitFor(serviceBus)
 //               ;
 
+// Add Azure SignalR emulator (must be before projects that reference it)
+var signalrEmulator = builder.AddAzureSignalR("Emulator-SignalR")
+    .RunAsEmulator();
+
 // Reference your Web API project
 var api = builder.AddProject<Projects.Azurite_APIs>("Azurite-Api")
            .WithReference(serviceBus)
            .WithReference(azuriteConn)
-           .WithReference(keyVaultConn)
-           .WaitFor(serviceBus)
-           .WaitFor(azurite)
+           .WithReference(signalrEmulator)
+           .WithReference(cache)
+           // Removed WaitFor calls to allow API to start immediately
+           // Resources will be available when needed, and the API can handle connection retries
+           // KeyVault is replaced with User Secrets - configured in Program.cs
            ;
-
-// Add Azure SignalR emulator
-var signalrEmulator = builder.AddAzureSignalR("Emulator-SignalR")
-    .RunAsEmulator();
 
 // Reference your Azure Functions project
 // Azure Functions can be added as a regular project in Aspire
@@ -100,9 +101,8 @@ var fnxQ = builder.AddProject<Projects.Azurite_Fnx_MonitorServicebusQueue>("Azur
                .WithReference(serviceBus)
                .WithReference(azuriteConn)
                .WithReference(signalrEmulator)
-               .WaitFor(azurite)
-               .WaitFor(serviceBus)
-               .WaitFor(signalrEmulator)
+               // Removed WaitFor calls to allow Functions to start immediately
+               // Resources will be available when needed, and Functions can handle connection retries
                ;
 
 // Reference your SignalR project
@@ -110,8 +110,8 @@ var signalR = builder.AddProject<Projects.Azurite_SignalR>("Azurite-SignalR")
                 .WithReference(fnxQ)
                 .WithReference(api)
                 .WithReference(signalrEmulator)
-                .WaitFor(fnxQ)
-                .WaitFor(signalrEmulator)
+                // Removed WaitFor calls to allow SignalR project to start immediately
+                // Resources will be available when needed
                 ;
 
 // Reference your Blazor WASM project

@@ -8,3 +8,7 @@ Minimal API to push onto AzureServiceBus
 Azure Fnx (listen ServiceBus & call SignalR to push to clients)
 Azure SignalR (reg client and push messages) - bridge client & server
 Blazor WASM (Client)
+
+
+Add db conn like a vault:
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Database=MyDb;User Id=sa;Password=StrongPwd!;TrustServerCertificate=True"

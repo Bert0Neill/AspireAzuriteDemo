@@ -16,6 +16,12 @@ var host = new HostBuilder()
     .ConfigureServices(services => {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
+        
+        // Register Service Bus extension for isolated worker model
+        services.Configure<WorkerOptions>(options =>
+        {
+            options.EnableUserCodeException = true;
+        });
     })
     .Build();
 
